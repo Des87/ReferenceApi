@@ -1,11 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ReferenceApi.Models;
 
-namespace Infrastructure
+namespace ReferenceApi
 {
     public class ContextDb : DbContext
     {
@@ -14,6 +10,10 @@ namespace Infrastructure
             Database.EnsureCreated();
         }
 
+        public virtual DbSet<Condition> Condition { get; set; }
+        public virtual DbSet<Current> Current { get; set; }
+        public virtual DbSet<Location> Location { get; set; }
+        public virtual DbSet<Weather> Weather { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
