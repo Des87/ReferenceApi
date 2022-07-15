@@ -1,17 +1,25 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Net.Http.Headers;
 using ReferenceApi.DTOs;
+using ReferenceApi.Helper;
 using ReferenceApi.Manager;
 using Swashbuckle.AspNetCore.Annotations;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace ReferenceApi.Controllers
 {
     public class ForecastController : Controller
     {
         private readonly IUnitOfWork iUnitOfWork;
+        private readonly ForecastManager forecastManager;
+        private readonly Tokenhelper tokenhelper;
         public ForecastController(IUnitOfWork iunitOfWork)
         {
             this.iUnitOfWork = iunitOfWork;
+            this.forecastManager = new ForecastManager(iUnitOfWork);
+            this.tokenhelper = new Tokenhelper();
         }
         /// <summary>
         /// Get course rates 
@@ -33,8 +41,17 @@ namespace ReferenceApi.Controllers
         {
             try
             {
-                ForecastManager forecastManager = new ForecastManager(iUnitOfWork);
-                var forecast = forecastManager.GetAllForecast(location, page, pageSize, orderBy, orderDir);
+                var tokenstring = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", string.Empty);
+                string user = "Unauthorized";
+                if (!string.IsNullOrEmpty(tokenstring))
+                {
+                    user = await tokenhelper.GetUserFromToken(tokenstring);
+                    if (user == null)
+                    {
+                        return StatusCode(401, "Unauthorized");
+                    }
+                }
+                var forecast = forecastManager.GetAllForecast(location, page, pageSize, orderBy, orderDir, user);
                 return StatusCode(200, forecast);
             }
             catch

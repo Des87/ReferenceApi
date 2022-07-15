@@ -15,8 +15,28 @@ namespace ReferenceApi.Manager
         {
             this.unitOfWork = unitOfWork;
         }
-
-        public async Task<Weather> FullfillDb(string city)
+        public async Task<List<Weather>> FullfillDb(int numberOf)
+        {
+            List<Weather> weathers = new List<Weather>();
+            HttpClient client = new HttpClient();
+            Random random = new Random();
+            String[] cities = new string[] { "Budapest", "Oslo", "Amsterdam", "Berlin", "London", "Paris", "Bergen"};
+            for (int i = 0; i < numberOf; i++)
+            {
+                string city = cities[random.Next(cities.Length)];
+                var request = await client.GetAsync($"{url}{apiKey}&q={city}&aqi=no").Result.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<WeatherDTO>(request);
+                var weather = await MappingWeather(result);
+                if (weather != null)
+                {
+                    await SaveWeather(weather);
+                    weathers.Add(weather);
+                }
+            }
+            client.Dispose();
+            return weathers;
+        }
+        public async Task<Weather> FillDb(string city)
         {
             HttpClient client = new HttpClient();
             var request = await client.GetAsync($"{url}{apiKey}&q={city}&aqi=no").Result.Content.ReadAsStringAsync(); ;
@@ -26,8 +46,10 @@ namespace ReferenceApi.Manager
             if (weather != null)
             {
                 await SaveWeather(weather);
+                client.Dispose();
                 return weather;
             }
+            client.Dispose();
             return null;
         }
 

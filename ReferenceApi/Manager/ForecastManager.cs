@@ -12,17 +12,19 @@ namespace ReferenceApi.Manager
             this.unitOfWork = unitOfWork;
         }
 
-        public ForecastDTO GetAllForecast(string location, int page, int pageSize, OrderBy orderBy, Direction orderDir)
+        public ForecastDTO GetAllForecast(string location, int page, int pageSize, OrderBy orderBy, Direction orderDir, string user)
         {
             var weathers = GetWeathers(location, orderBy, orderDir);
 
             ForecastDTO forecastDTO = new ForecastDTO()
             {
+                User = user,
                 CountOf = weathers.Count(),
                 Page = page,
-                PageSize = pageSize,
                 Weathers = weathers.Skip((page - 1) * pageSize).Take(pageSize).ToList()
-        };
+            };
+            forecastDTO.PageSize = forecastDTO.Weathers.Count();
+
             return forecastDTO;
         }
 
