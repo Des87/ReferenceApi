@@ -2,13 +2,13 @@
 
 namespace ReferenceApi
 {
-    public class UserInfoRepository
+    public class UserInfoRepository : IUserInfoRepository
     {
         private readonly UserInfoDb userInfoDb;
 
-        public UserInfoRepository()
+        public UserInfoRepository(UserInfoDb userInfoDb)
         {
-            this.userInfoDb = new UserInfoDb();
+            this.userInfoDb = userInfoDb;
         }
         public void AddNewUser(string userName, string password)
         {

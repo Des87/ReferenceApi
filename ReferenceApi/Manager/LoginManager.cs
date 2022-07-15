@@ -2,25 +2,23 @@
 
 namespace ReferenceApi.Manager
 {
-    public class LoginManager
+    public class LoginManager : ILoginManager
     {
-        private readonly UserInfoRepository userInfoRepository;
-        private readonly Tokenhelper tokenhelper;
-        public LoginManager()
+        private readonly IUnitOfWork unitOfWork;
+        public LoginManager(IUnitOfWork unitOfWork)
         {
-            userInfoRepository = new UserInfoRepository();
-            tokenhelper = new Tokenhelper();
+            this.unitOfWork = unitOfWork;
         }
         public async Task<string> UserLogin(string userName, string password)
         {
             try
             {
-                var userInfo = userInfoRepository.GetUser(userName);
+                var userInfo = unitOfWork.userInfoRepository.GetUser(userName);
                 var result = SecurePasswordHasher.Verify(password, userInfo.Password);
                 string token = "";
                 if (result)
                 {
-                    token = await tokenhelper.GenerateJSONWebToken(userInfo);
+                    token = await unitOfWork.tokenhelper.GenerateJSONWebToken(userInfo);
                 }
                 return token;
             }

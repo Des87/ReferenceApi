@@ -2,12 +2,12 @@
 
 namespace ReferenceApi.Manager
 {
-    public class RegistryManager
+    public class RegistryManager : IRegistryManager
     {
-        private readonly UserInfoRepository userInfoRepository;
-        public RegistryManager()
+        private readonly IUnitOfWork unitOfWork;
+        public RegistryManager(IUnitOfWork unitOfWork)
         {
-            userInfoRepository = new UserInfoRepository();
+            unitOfWork = unitOfWork;
         }
 
         public void UserRegistry(string userName, string password)
@@ -15,14 +15,14 @@ namespace ReferenceApi.Manager
             try
             {
                 var hash = SecurePasswordHasher.Hash(password);
-                userInfoRepository.AddNewUser(userName, hash);
+                unitOfWork.userInfoRepository.AddNewUser(userName, hash);
             }
             catch (Exception)
             {
                 //TODO logging
                 throw;
             }
-       
+
         }
     }
 }

@@ -3,7 +3,7 @@ using ReferenceApi.Models;
 
 namespace ReferenceApi.Manager
 {
-    public class ForecastManager
+    public class ForecastManager : IForecastManager
     {
         private readonly IUnitOfWork unitOfWork;
 
@@ -30,7 +30,7 @@ namespace ReferenceApi.Manager
 
         private List<Weather> GetWeathers(string location, OrderBy orderBy, Direction orderDir)
         {
-            List<Weather> weathers = new List< Weather >();
+            List<Weather> weathers = new List<Weather>();
             if (!string.IsNullOrWhiteSpace(location))
             {
                 weathers = unitOfWork.weatherRepository.GetByCriteria(x => x.Location.Name == location).ToList();

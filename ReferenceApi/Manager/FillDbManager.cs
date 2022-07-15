@@ -5,7 +5,7 @@ using ReferenceApi.Models;
 
 namespace ReferenceApi.Manager
 {
-    public class FillDbManager
+    public class FillDbManager : IFillDbManager
     {
         private const string apiKey = "f4a06426ad2040bf960191544221207";
         private const string url = "http://api.weatherapi.com/v1/current.json?key=";
@@ -20,13 +20,13 @@ namespace ReferenceApi.Manager
             List<Weather> weathers = new List<Weather>();
             HttpClient client = new HttpClient();
             Random random = new Random();
-            String[] cities = new string[] { "Budapest", "Oslo", "Amsterdam", "Berlin", "London", "Paris", "Bergen"};
+            String[] cities = new string[] { "Budapest", "Oslo", "Amsterdam", "Berlin", "London", "Paris", "Bergen" };
             for (int i = 0; i < numberOf; i++)
             {
                 string city = cities[random.Next(cities.Length)];
                 var request = await client.GetAsync($"{url}{apiKey}&q={city}&aqi=no").Result.Content.ReadAsStringAsync();
                 var result = JsonConvert.DeserializeObject<WeatherDTO>(request);
-                var weather = await MappingWeather(result);
+                var weather = MappingWeather(result);
                 if (weather != null)
                 {
                     await SaveWeather(weather);
@@ -36,13 +36,13 @@ namespace ReferenceApi.Manager
             client.Dispose();
             return weathers;
         }
-        public async Task<Weather> FillDb(string city)
+        public async Task<Weather?> FillDb(string city)
         {
             HttpClient client = new HttpClient();
             var request = await client.GetAsync($"{url}{apiKey}&q={city}&aqi=no").Result.Content.ReadAsStringAsync(); ;
 
-            var result = JsonConvert.DeserializeObject<WeatherDTO>(request);           
-            var weather = await MappingWeather(result);
+            var result = JsonConvert.DeserializeObject<WeatherDTO>(request);
+            var weather = MappingWeather(result);
             if (weather != null)
             {
                 await SaveWeather(weather);
@@ -57,11 +57,10 @@ namespace ReferenceApi.Manager
         {
             unitOfWork.weatherRepository.Add(weather);
             var success = unitOfWork.Complete();
-            //TODO log
             return Task.CompletedTask;
         }
 
-        private async Task<Weather> MappingWeather(WeatherDTO? result)
+        private Weather MappingWeather(WeatherDTO? result)
         {
             Location location = new Location();
             Current current = new Current();

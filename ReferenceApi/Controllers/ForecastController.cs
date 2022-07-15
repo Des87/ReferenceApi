@@ -12,28 +12,14 @@ namespace ReferenceApi.Controllers
 {
     public class ForecastController : Controller
     {
-        private readonly IUnitOfWork iUnitOfWork;
-        private readonly ForecastManager forecastManager;
-        private readonly Tokenhelper tokenhelper;
-        public ForecastController(IUnitOfWork iunitOfWork)
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IForecastManager forecastManager;
+        public ForecastController(IUnitOfWork unitOfWork, IForecastManager forecastManager)
         {
-            this.iUnitOfWork = iunitOfWork;
-            this.forecastManager = new ForecastManager(iUnitOfWork);
-            this.tokenhelper = new Tokenhelper();
+            this.unitOfWork = unitOfWork;
+            this.forecastManager = forecastManager;
         }
-        /// <summary>
-        /// Get course rates 
-        /// </summary>
-        /// <remarks>
-        /// Sample request:
-        /// 
-        ///     Get api/Rate/d769b3c1-7d0c-ec11-b6e6-002248824dc2
-        /// </remarks>
-        /// <param name="orderBy"></param>
-        /// <param name="orderDir"></param>
-        /// <param name="page"></param>
-        /// <param name="pageSize"></param>
-        /// <response code="500">Something went wrong</response>
+      
         [SwaggerResponse(200, Type = typeof(ForecastDTO))]
         [HttpGet("GetAllForecast")]
         [Produces("application/json")]
@@ -45,17 +31,20 @@ namespace ReferenceApi.Controllers
                 string user = "Unauthorized";
                 if (!string.IsNullOrEmpty(tokenstring))
                 {
-                    user = await tokenhelper.GetUserFromToken(tokenstring);
+                    user = await unitOfWork.tokenhelper.GetUserFromToken(tokenstring);
                     if (user == null)
                     {
+                        unitOfWork.Dispose();
                         return StatusCode(401, "Unauthorized");
                     }
                 }
                 var forecast = forecastManager.GetAllForecast(location, page, pageSize, orderBy, orderDir, user);
+                unitOfWork.Dispose();
                 return StatusCode(200, forecast);
             }
             catch
             {
+                unitOfWork.Dispose();
                 return StatusCode(500, "Something went wrong");
             }
         }

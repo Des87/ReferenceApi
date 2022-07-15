@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ReferenceApi.Helper
 {
-    public class Tokenhelper
+    public class Tokenhelper : ITokenhelper
     {
         public async Task<string> GenerateJSONWebToken(UserInfo userInfo)
         {

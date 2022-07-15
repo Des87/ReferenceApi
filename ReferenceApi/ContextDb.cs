@@ -10,10 +10,10 @@ namespace ReferenceApi
             Database.EnsureCreated();
         }
 
-        public virtual DbSet<Condition> Condition { get; set; }
-        public virtual DbSet<Current> Current { get; set; }
-        public virtual DbSet<Location> Location { get; set; }
-        public virtual DbSet<Weather> Weather { get; set; }
+        public virtual DbSet<Condition>? Condition { get; set; }
+        public virtual DbSet<Current>? Current { get; set; }
+        public virtual DbSet<Location>? Location { get; set; }
+        public virtual DbSet<Weather>? Weather { get; set; }
 
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

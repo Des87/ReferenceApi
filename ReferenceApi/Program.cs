@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using ReferenceApi;
 using ReferenceApi.Helper;
+using ReferenceApi.Manager;
 using ReferenceApi.Repository;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System.Text;
@@ -29,6 +30,11 @@ builder.Services.AddSwaggerGen(opt =>
 
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
+builder.Services.AddTransient<IFillDbManager, FillDbManager>();
+builder.Services.AddTransient<IForecastManager, ForecastManager>();
+builder.Services.AddTransient<IRegistryManager, RegistryManager>();
+builder.Services.AddTransient<ILoginManager, LoginManager>();
+
 
 var app = builder.Build();
 
