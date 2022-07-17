@@ -3,7 +3,7 @@
 namespace ReferenceApi.Exceptions
 {
     [Serializable]
-    internal class InvalidUserOrPassword : Exception
+    public class InvalidUserOrPassword : Exception
     {
         public InvalidUserOrPassword()
         {
