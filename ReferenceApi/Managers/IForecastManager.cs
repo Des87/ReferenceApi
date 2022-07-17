@@ -1,6 +1,6 @@
 ﻿using ReferenceApi.DTOs;
 
-namespace ReferenceApi.Manager
+namespace ReferenceApi.Managers
 {
     public interface IForecastManager
     {

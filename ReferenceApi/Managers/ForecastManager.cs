@@ -1,7 +1,7 @@
 ﻿using ReferenceApi.DTOs;
 using ReferenceApi.Models;
 
-namespace ReferenceApi.Manager
+namespace ReferenceApi.Managers
 {
     public class ForecastManager : IForecastManager
     {
@@ -24,7 +24,6 @@ namespace ReferenceApi.Manager
                 Weathers = weathers.Skip((page - 1) * pageSize).Take(pageSize).ToList()
             };
             forecastDTO.PageSize = forecastDTO.Weathers.Count();
-
             return forecastDTO;
         }
 

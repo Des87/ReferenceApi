@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
-using ReferenceApi.Manager;
+using ReferenceApi.Managers;
 using ReferenceApi.Models;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -9,66 +9,50 @@ namespace ReferenceApi.Controllers
 {
     public class FillDbController : Controller
     {
-        private readonly IUnitOfWork unitOfWork;
         private readonly IFillDbManager fillDbManager;
-        public FillDbController(IUnitOfWork unitOfWork, IFillDbManager fillDbManager)
+        public FillDbController(IFillDbManager fillDbManager)
         {
-            this.unitOfWork = unitOfWork;
             this.fillDbManager = fillDbManager;
         }
-       
-        [SwaggerResponse(200, Type = typeof(Weather))]
-        [HttpGet("FillDb")]
+        /// <summary>
+        /// Post one sample weather data to the database
+        /// </summary>
+        /// <param name="city"></param>
+        /// <response code="500">Internal Server Error (Something went wrong)</response>
+        [SwaggerResponse(204, Type = typeof(Weather))]
+        [HttpPost]
+        [Route("FillDb/")]
         [Produces("application/json")]
-        public async Task<IActionResult> FillDb([FromHeader] string city = "Budapest")
+        public async Task<IActionResult> FillDb(string city = "Budapest")
         {
             try
             {
-                var tokenstring = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", string.Empty);
-                string user = "Unauthorized";
-                if (!string.IsNullOrEmpty(tokenstring))
-                {
-                    user = await unitOfWork.tokenhelper.GetUserFromToken(tokenstring);
-                    if (user == null)
-                    {
-                        return StatusCode(401, "Unauthorized");
-                    }
-                }
                 var weather = await fillDbManager.FillDb(city);
-                unitOfWork.Dispose();
-                return StatusCode(200, weather);
+                return StatusCode(204, weather);
             }
             catch
             {
-                unitOfWork.Dispose();
                 return StatusCode(500, "Something went wrong");
             }
         }
-       
-        [SwaggerResponse(200, Type = typeof(List<Weather>))]
-        [HttpGet("FullfillDb")]
+        /// <summary>
+        /// Post more sample weather data to the database
+        /// </summary>
+        /// <param name="numberOf"></param>
+        /// <response code="500">Internal Server Error (Something went wrong)</response>
+        [SwaggerResponse(204, Type = typeof(List<Weather>))]
+        [HttpPost]
+        [Route("FullfillDb/")]
         [Produces("application/json")]
         public async Task<IActionResult> FullfillDb([FromHeader] int numberOf = 15)
         {
             try
             {
-                var tokenstring = Request.Headers[HeaderNames.Authorization].ToString().Replace("Bearer ", string.Empty);
-                string user = "Unauthorized";
-                if (!string.IsNullOrEmpty(tokenstring))
-                {
-                    user = await unitOfWork.tokenhelper.GetUserFromToken(tokenstring);
-                    if (user == null)
-                    {
-                        return StatusCode(401, "Unauthorized");
-                    }
-                }
                 var weathers = await fillDbManager.FullfillDb(numberOf);
-                unitOfWork.Dispose();
-                return StatusCode(200, weathers);
+                return StatusCode(204, weathers);
             }
             catch
             {
-                unitOfWork.Dispose();
                 return StatusCode(500, "Something went wrong");
             }
         }

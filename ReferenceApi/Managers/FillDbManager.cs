@@ -3,14 +3,13 @@ using Newtonsoft.Json.Linq;
 using ReferenceApi.DTOs;
 using ReferenceApi.Models;
 
-namespace ReferenceApi.Manager
+namespace ReferenceApi.Managers
 {
     public class FillDbManager : IFillDbManager
     {
         private const string apiKey = "f4a06426ad2040bf960191544221207";
         private const string url = "http://api.weatherapi.com/v1/current.json?key=";
         private readonly IUnitOfWork unitOfWork;
-
         public FillDbManager(IUnitOfWork unitOfWork)
         {
             this.unitOfWork = unitOfWork;

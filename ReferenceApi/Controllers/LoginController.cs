@@ -1,39 +1,45 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ReferenceApi.Manager;
+using ReferenceApi.Exceptions;
+using ReferenceApi.Managers;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace ReferenceApi.Controllers
 {
     public class LoginController : Controller
     {
+        private readonly ILogger<LoginController> logger;
         private readonly ILoginManager loginManager;
-        private readonly IUnitOfWork unitOfWork;
 
-        public LoginController(IUnitOfWork unitOfWork, ILoginManager loginManager)
+        public LoginController(ILoginManager loginManager, ILogger<LoginController> logger)
         {
-            this.unitOfWork = unitOfWork;
             this.loginManager = loginManager;
+            this.logger = logger;
         }
-      
-        [HttpPost("Login")]
+        /// <summary>
+        /// Log in and get token
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <response code="401">Unauthorized (Invalid username or password)</response>
+        /// <response code="500">Internal Server Error (Something went wrong)</response>
+        [HttpPost]
+        [Route("Login/{username}/{password}")]
         [SwaggerResponse(200, Type = typeof(string))]
         [Produces("application/json")]
-        public async Task<IActionResult> Login([FromHeader] string userName, string password)
+        public async Task<IActionResult> Login(string username, string password)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(userName) || string.IsNullOrWhiteSpace(password))
-                {
-                    unitOfWork.Dispose();
-                    return StatusCode(401, "Invalid username or password");
-                }
-                var token = loginManager.UserLogin(userName, password);
-                unitOfWork.Dispose();
-                return StatusCode(200, token.Result);
+                logger.LogInformation(username);
+                var token = loginManager.UserLogin(username, password);
+                return StatusCode(200, token);
             }
-            catch
+            catch (InvalidUserOrPassword ex)
             {
-                unitOfWork.Dispose();
+                return StatusCode(401, ex.Message);
+            }
+            catch (Exception)
+            {
                 return StatusCode(500, "Something went wrong");
             }
         }

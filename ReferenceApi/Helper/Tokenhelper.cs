@@ -8,7 +8,7 @@ namespace ReferenceApi.Helper
 {
     public class Tokenhelper : ITokenhelper
     {
-        public async Task<string> GenerateJSONWebToken(UserInfo userInfo)
+        public string GenerateJSONWebToken(UserInfo userInfo)
         {
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("ThisismySecretKey"));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -25,12 +25,20 @@ namespace ReferenceApi.Helper
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-        public async Task<string> GetUserFromToken(string token)
+        public string GetUserFromToken(string token)
         {
-            var jwtSecurityToken = new JwtSecurityToken(token);
-            var claims = jwtSecurityToken.Claims.ToList();
+            try
+            {
+                var jwtSecurityToken = new JwtSecurityToken(token);
+                var claims = jwtSecurityToken.Claims.ToList();
 
-            return claims[0].Value;
+                return claims[0].Value;
+            }
+            catch
+            {
+                throw new UnauthorizedAccessException("Unauthorized");
+            }
+          
         }
     }
 }

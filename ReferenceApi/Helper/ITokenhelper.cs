@@ -4,7 +4,7 @@ namespace ReferenceApi.Helper
 {
     public interface ITokenhelper
     {
-        Task<string> GenerateJSONWebToken(UserInfo userInfo);
-        Task<string> GetUserFromToken(string token);
+        string GenerateJSONWebToken(UserInfo userInfo);
+        string GetUserFromToken(string token);
     }
 }

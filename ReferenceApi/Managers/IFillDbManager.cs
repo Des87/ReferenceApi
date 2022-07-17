@@ -1,6 +1,6 @@
 ﻿using ReferenceApi.Models;
 
-namespace ReferenceApi.Manager
+namespace ReferenceApi.Managers
 {
     public interface IFillDbManager
     {
