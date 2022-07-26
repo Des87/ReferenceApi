@@ -31,7 +31,7 @@ namespace ReferenceApi.Repository
             var weather = contextDb.Weather.Where(predicate);
             if (includeRelatedEntities)
             {
-                weather = weather.Include(r => r.Location).Include(r => r.Current).Include(r => r.Current.Condition);
+                weather = weather.Include(r => r.Location).Include(r => r.Current).ThenInclude(r => r.Condition);
             }
             return weather;
         }
@@ -40,7 +40,7 @@ namespace ReferenceApi.Repository
             var weather = contextDb.Weather.AsQueryable();
             if (includeRelatedEntities)
             {
-                weather = weather.Include(r => r.Location).Include(r => r.Current).Include(r => r.Current.Condition);
+                weather = weather.Include(r => r.Location).Include(r => r.Current).ThenInclude(r => r.Condition);
             }
             return weather;
         }
